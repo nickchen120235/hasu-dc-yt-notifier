@@ -45,7 +45,7 @@ Deno.serve(async (req) => {
     default:
       return new Response(null, { status: 405 });
   }
-})
+});
 
 Deno.cron("update subscription", "0 0,12 * * *", async () => {
   const expires = (await kv.get<number>(["property", "expires"])).value;
