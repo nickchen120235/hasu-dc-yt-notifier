@@ -20,6 +20,7 @@ type ScheduledVideoEvent = {
 type Event = ReceivedVideoEvent | ScheduledVideoEvent;
 
 async function sendToDiscord(content: string) {
+  console.log(`Sending to Discord: ${content}`);
   const channelInfo = await getChannel();
   const username = channelInfo?.title ?? "蓮ノ空女学院スクールアイドルクラブ公式チャンネル";
   const avatar_url = channelInfo?.thumbnails.high?.url ?? "https://www.lovelive-anime.jp/hasunosora/shared/img/common/ft_app2_icon.png"; // puchihasu

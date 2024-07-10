@@ -8,11 +8,11 @@ const _CALLBACK_ENDPOINT = Deno.env.get("CALLBACK_ENDPOINT");
 const _DISCORD_WEBHOOK = Deno.env.get("DISCORD_WEBHOOK");
 const _YOUTUBE_API_KEY = Deno.env.get("YOUTUBE_API_KEY");
 if (!_CALLBACK_ENDPOINT || !_DISCORD_WEBHOOK || !_YOUTUBE_API_KEY) {
-  throw new Error("Missing environment variables");
+  console.error("Missing environment variables");
 }
 
 // constants
-export const CALLBACK_ENDPOINT = _CALLBACK_ENDPOINT;
-export const DISCORD_WEBHOOK = _DISCORD_WEBHOOK;
-export const YOUTUBE_API_KEY = _YOUTUBE_API_KEY;
+export const CALLBACK_ENDPOINT = _CALLBACK_ENDPOINT!;
+export const DISCORD_WEBHOOK = _DISCORD_WEBHOOK!;
+export const YOUTUBE_API_KEY = _YOUTUBE_API_KEY!;
 export const YT_CHANNEL_ID = "UCxUgvwrVfqVpyak4cuKcevQ"; // lovelive_hasu
