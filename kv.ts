@@ -46,10 +46,11 @@ async function processReceivedVideo(video: Notification) {
     return;
   }
   const trueTimestamp = Math.floor(new Date(videoData.snippet.publishedAt).valueOf() / 1000);
+  let isOldVideo = false;
   const lastReceived = (await kv.get<number>(["property", "lastReceivedTimestamp"])).value;
   if (lastReceived && lastReceived > trueTimestamp) {
     console.warn(`Skipping old video ${video.videoUrl}`);
-    return;
+    isOldVideo = true;
   }
   // queue it for later if it is a premiere/live video
   if (videoData.snippet.liveBroadcastContent === "upcoming") {
@@ -59,9 +60,10 @@ async function processReceivedVideo(video: Notification) {
     return;
   }
   else {
-    await sendToDiscord(video.videoUrl);
+    if (!isOldVideo) await sendToDiscord(video.videoUrl);
   }
-  await kv.set(["property", "lastReceivedTimestamp"], trueTimestamp);
+  if (!isOldVideo)
+    await kv.set(["property", "lastReceivedTimestamp"], trueTimestamp);
 }
 
 export async function processNotification(video: Notification) {
