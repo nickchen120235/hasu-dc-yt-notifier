@@ -30,8 +30,8 @@ Deno.serve(async (req) => {
           console.log(`We have received ${notification.videoUrl} recently`);
           return new Response(null, { status: 204 });
         }
-        // cache video id for 7 days to prevent duplicate notifications
-        await kv.set(["video", notification.videoId], new Date().valueOf(), { expireIn: 1000 * 86400 * 7 });
+        // cache video id for 30 days to prevent duplicate notifications
+        await kv.set(["video", notification.videoId], new Date().valueOf(), { expireIn: 1000 * 86400 * 30 });
         await processNotification(notification);
         return new Response(null, { status: 204 });
       }
