@@ -73,8 +73,6 @@ async function updateSub(channelId: string) {
 
 Deno.cron("update subscription", "0 0,12 * * *", async () => {
   for (const channel of YT_CHANNEL_ID) {
-    const expires = (await kv.get<number>(["property", "expires", channel])).value;
-    if (!expires) continue;
     try {
       await updateSub(channel);
     }
