@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "dev": "deno run -A main.ts"
+    "dev": "deno run -A --unstable-kv --unstable-cron --watch main.ts"
   },
   "imports": {
     "./": "./",

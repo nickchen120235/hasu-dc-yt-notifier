@@ -12,7 +12,13 @@ Deno.serve(async (req) => {
       const lease = url.searchParams.get('hub.lease_seconds');
       if (topic && challenge && lease) {
         console.log('Received callback challenge');
-        await kv.set(["property", "expires"], parseInt(lease) + Math.floor(Date.now() / 1000));
+        const topicUrl = new URL(topic);
+        const channelId = topicUrl.searchParams.get('channel_id');
+        if (!channelId) {
+          console.error("Invalid topic URL");
+          return new Response(null, { status: 400 });
+        }
+        await kv.set(["property", "expires", channelId], parseInt(lease) + Math.floor(Date.now() / 1000));
         return new Response(challenge, {
           status: 200,
           headers: {
@@ -47,13 +53,11 @@ Deno.serve(async (req) => {
   }
 });
 
-Deno.cron("update subscription", "0 0,12 * * *", async () => {
-  const expires = (await kv.get<number>(["property", "expires"])).value;
-  if (!expires) return;
+async function updateSub(channelId: string) {
   console.log("Updating subscription");
   const form = new FormData();
   form.set('hub.callback', CALLBACK_ENDPOINT);
-  form.set('hub.topic', `https://www.youtube.com/xml/feeds/videos.xml?channel_id=${YT_CHANNEL_ID}`);
+  form.set('hub.topic', `https://www.youtube.com/xml/feeds/videos.xml?channel_id=${channelId}`);
   form.set('hub.verify', 'async');
   form.set('hub.mode', 'subscribe');
   form.set('hub.verify_token', '');
@@ -65,4 +69,23 @@ Deno.cron("update subscription", "0 0,12 * * *", async () => {
   });
   if (!res.ok)
     throw new Error(`${res.status} ${res.statusText}`);
+}
+
+Deno.cron("update subscription", "0 0,12 * * *", async () => {
+  for (const channel of YT_CHANNEL_ID) {
+    const expires = (await kv.get<number>(["property", "expires", channel])).value;
+    if (!expires) continue;
+    try {
+      await updateSub(channel);
+    }
+    catch (error) {
+      console.error(`Failed to update subscription for ${channel}`);
+      if (error instanceof Error) {
+        console.error(`${error.name}: ${error.message}`);
+      }
+      else {
+        console.error(JSON.stringify(error));
+      }
+    }
+  }
 });

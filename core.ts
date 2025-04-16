@@ -15,4 +15,6 @@ if (!_CALLBACK_ENDPOINT || !_DISCORD_WEBHOOK || !_YOUTUBE_API_KEY) {
 export const CALLBACK_ENDPOINT = _CALLBACK_ENDPOINT!;
 export const DISCORD_WEBHOOK = _DISCORD_WEBHOOK!;
 export const YOUTUBE_API_KEY = _YOUTUBE_API_KEY!;
-export const YT_CHANNEL_ID = "UCxUgvwrVfqVpyak4cuKcevQ"; // lovelive_hasu
+export const YT_CHANNEL_ID = [
+  "UCxUgvwrVfqVpyak4cuKcevQ", // lovelive_hasu
+];
