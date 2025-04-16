@@ -17,4 +17,6 @@ export const DISCORD_WEBHOOK = _DISCORD_WEBHOOK!;
 export const YOUTUBE_API_KEY = _YOUTUBE_API_KEY!;
 export const YT_CHANNEL_ID = [
   "UCxUgvwrVfqVpyak4cuKcevQ", // lovelive_hasu
+  "UCIi9mBHzuN_fSgV_ZEOMbbA", // sasaki_kotoko
+  "UCqm2yEBRh8_ZdShZaxXoFKg", // tsukinekonaofficial
 ];
