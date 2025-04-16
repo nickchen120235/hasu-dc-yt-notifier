@@ -47,7 +47,7 @@ async function processReceivedVideo(video: Notification) {
   }
   const trueTimestamp = Math.floor(new Date(videoData.snippet.publishedAt).valueOf() / 1000);
   let isOldVideo = false;
-  const lastReceived = (await kv.get<number>(["property", "lastReceivedTimestamp"])).value;
+  const lastReceived = (await kv.get<number>(["property", "lastReceivedTimestamp", videoData.snippet.channelId])).value;
   if (lastReceived && lastReceived > trueTimestamp) {
     console.warn(`Skipping old video ${video.videoUrl}`);
     isOldVideo = true;
@@ -63,7 +63,7 @@ async function processReceivedVideo(video: Notification) {
     if (!isOldVideo) await sendToDiscord(video.videoUrl);
   }
   if (!isOldVideo)
-    await kv.set(["property", "lastReceivedTimestamp"], trueTimestamp);
+    await kv.set(["property", "lastReceivedTimestamp", videoData.snippet.channelId], trueTimestamp);
 }
 
 export async function processNotification(video: Notification) {
