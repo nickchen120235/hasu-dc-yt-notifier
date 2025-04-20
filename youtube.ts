@@ -39,10 +39,10 @@ export async function getVideo(videoId: string): Promise<Video | null> {
   else return null;
 }
 
-export async function getChannel(): Promise<Required<ChannelSnippet> | null> {
+export async function getChannel(channelId: string): Promise<Required<ChannelSnippet> | null> {
   const res = await api.get("channels", {
     searchParams: {
-      id: YT_CHANNEL_ID,
+      id: channelId,
       part: "snippet",
     },
   });

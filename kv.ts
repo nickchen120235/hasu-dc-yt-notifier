@@ -16,12 +16,13 @@ type ReceivedVideoEvent = {
 type ScheduledVideoEvent = {
   type: QueueEventType.SCHEDULED_VIDEO,
   videoUrl: string,
+  channelId: string,
 }
 type Event = ReceivedVideoEvent | ScheduledVideoEvent;
 
-async function sendToDiscord(content: string) {
+async function sendToDiscord(content: string, channelId: string) {
   console.log(`Sending to Discord: ${content}`);
-  const channelInfo = await getChannel();
+  const channelInfo = await getChannel(channelId);
   const username = channelInfo?.title ?? "Unknown Channel";
   const avatar_url = channelInfo?.thumbnails.high?.url ?? "https://www.lovelive-anime.jp/hasunosora/shared/img/common/ft_app2_icon.png"; // puchihasu
   await fetch(DISCORD_WEBHOOK, {
@@ -33,9 +34,9 @@ async function sendToDiscord(content: string) {
   });
 }
 
-async function queueVideoForLater(videoUrl: string, scheduledStartTime: Date) {
+async function queueVideoForLater(videoUrl: string, channelId: string, scheduledStartTime: Date) {
   const delay = scheduledStartTime.valueOf() - new Date().valueOf();
-  await kv.enqueue({ type: QueueEventType.SCHEDULED_VIDEO, videoUrl }, { delay });
+  await kv.enqueue({ type: QueueEventType.SCHEDULED_VIDEO, videoUrl, channelId }, { delay });
 }
 
 async function processReceivedVideo(video: Notification) {
@@ -55,12 +56,12 @@ async function processReceivedVideo(video: Notification) {
   // queue it for later if it is a premiere/live video
   if (videoData.snippet.liveBroadcastContent === "upcoming") {
     const scheduledStartTime = new Date(videoData.liveStreamingDetails!.scheduledStartTime!);
-    await queueVideoForLater(video.videoUrl, scheduledStartTime);
-    await sendToDiscord(`${video.videoUrl} 即將於 <t:${scheduledStartTime.valueOf() / 1000}> 直播/公開`);
+    await queueVideoForLater(video.videoUrl, videoData.snippet.channelId, scheduledStartTime);
+    await sendToDiscord(`${video.videoUrl} 即將於 <t:${scheduledStartTime.valueOf() / 1000}> 直播/公開`, videoData.snippet.channelId);
     return;
   }
   else {
-    if (!isOldVideo) await sendToDiscord(video.videoUrl);
+    if (!isOldVideo) await sendToDiscord(video.videoUrl, videoData.snippet.channelId);
   }
   if (!isOldVideo)
     await kv.set(["property", "lastReceivedTimestamp", videoData.snippet.channelId], trueTimestamp);
@@ -77,7 +78,7 @@ kv.listenQueue(async (event: Event) => {
         await processReceivedVideo(event.video);
         break;
       case QueueEventType.SCHEDULED_VIDEO:
-        await sendToDiscord(event.videoUrl);
+        await sendToDiscord(event.videoUrl, event.channelId);
         break;
     }
   }
