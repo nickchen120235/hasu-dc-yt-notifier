@@ -19,4 +19,5 @@ export const YT_CHANNEL_ID = [
   "UCxUgvwrVfqVpyak4cuKcevQ", // lovelive_hasu
   "UCIi9mBHzuN_fSgV_ZEOMbbA", // sasaki_kotoko
   "UCqm2yEBRh8_ZdShZaxXoFKg", // tsukinekonaofficial
+  "UCanl_I9roo5CjhmhcdDuKZQ", // かんかんなおふぃしゃる
 ];
